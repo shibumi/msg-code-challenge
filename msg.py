@@ -76,7 +76,13 @@ class TSP:
 
         return distance_callback
 
+
+    def get_result(self):
+        return self.result
+    
+
     def __init__(self, data):
+        self.result = {}
         routing = pywrapcp.RoutingModel(data['tsp_size'], data['num_routes'],
                                         data['depot'])
         search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
@@ -86,26 +92,22 @@ class TSP:
         # Solve the problem.
         assignment = routing.SolveWithParameters(search_parameters)
         if assignment:
-            # Solution distance.
-            print("Total distance: " + str(assignment.ObjectiveValue()) +
-                  " miles\n")
-            # Display the solution.
-            # Only one route here; otherwise iterate from 0 to routing.vehicles() - 1
-            route_number = 0
+            self.result['total_distance'] = str(assignment.ObjectiveValue()) + " miles"
+            self.result['start_position'] = data['cities'][data['depot']]
             # Index of the variable for the starting node.
-            index = routing.Start(route_number)
-            route = ''
+            index = routing.Start(0)
+            self.result['route'] = ''
             while not routing.IsEnd(index):
                 # Convert variable indices to node indices in the displayed route.
-                route += str(
+                self.result['route'] += str(
                     data['cities'][routing.IndexToNode(index)]) + ' -> '
                 index = assignment.Value(routing.NextVar(index))
-            route += str(data['cities'][routing.IndexToNode(index)])
-            print("Route:\n\n" + route)
+            self.result['route'] += str(data['cities'][routing.IndexToNode(index)])
         else:
-            print('No solution found.')
+            self.result = {}
 
 
 if __name__ == "__main__":
     data = get_msg_data()
-    TSP(data)
+    tsp = TSP(data)
+    print(tsp.get_result())
