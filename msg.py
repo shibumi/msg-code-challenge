@@ -20,11 +20,12 @@ class MSG:
                 # we could also calculate this by ourself via: https://en.wikipedia.org/wiki/Vincenty's_formulae
                 # or via: https://en.wikipedia.org/wiki/Haversine_formula
                 # the geopy library uses the Vincenty's formulae, because it's more precise.
-                self.distances.append([source, dest, distance(source_coord, dest_coord).m])
+                d = distance(source_coord, dest_coord).m
+                 # do not add distances with distance 0.0, because these are source == destination cycles
+                if d != 0.0:
+                    self.distances.append([source, dest, distance(source_coord, dest_coord).m])
         # sort based on distance == third element in calculated distances list
         self.distances.sort(key=lambda x: x[2])
-        # remove all distances with distance 0.0, because these are source == destination
-        self.distances = list(filter(lambda x: x[2] != 0.0, self.distances))
         # from now here on use dijkstar
         print(self.distances)
 
