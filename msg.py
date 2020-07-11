@@ -6,7 +6,12 @@ from ortools.constraint_solver import pywrapcp
 
 
 def test_data():
-    """Stores the data for the problem."""
+    """
+    test_data calculates our test data model for tests.
+    The calculated data is the same as in: https://developers.google.com/optimization/routing/tsp#program1
+    I wanted to make sure, that my calculation is correct.
+    Furthermore I have added a few parameters to the data model, like the city names and the TSP size
+    """
     data = {}
     data['cities'] = [
         'New York', 'Los Angeles', 'Chicago', 'Minneapolis', 'Denver',
@@ -14,6 +19,8 @@ def test_data():
         'Phoenix', 'Salt Lake City'
     ]
     data['tsp_size'] = len(data['cities'])
+    # The yapf: disable comments turns off yapf python code formatting,
+    # We don't want that our distance_matrix looks ugly, when we have to look at it :)
     data['distance_matrix'] = [
         [0, 2451, 713, 1018, 1631, 1374, 2408, 213, 2571, 875, 1420, 2145, 1972],
         [2451, 0, 1745, 1524, 831, 1240, 959, 2596, 403, 1589, 1374, 357, 579],
@@ -35,6 +42,11 @@ def test_data():
 
 
 def get_msg_data():
+    """
+    get_msg_data parses our CSV file, calculates the GPS distances via the Vincentys Formulae in the geopy library
+    and returns a data object with an initialized distance_matrix, it also sets the depot (our start/end position),
+    the number of routes and it calculates the TSP size.
+    """
     data = {}
     data['cities'] = []
     data['tsp_size'] = 0
@@ -69,40 +81,59 @@ def get_msg_data():
 
 
 class TSP:
+    """
+    TSP calculates the Traveling Salesman Problem for our Challenge.
+    We use Google's Operations Research library here, because of several reasons:
+
+        1. Reason
+    """
     def create_distance_callback(self, dist_matrix):
-        # Create a callback to calculate distances between cities.
+        """
+        create_distance_callback creates a callback function.
+        The callback function works as functon pointer to a cost function.
+        In this case, we are setting the cost function == the distance of two nodes
+        """
         def distance_callback(from_node, to_node):
             return int(dist_matrix[from_node][to_node])
-
+        # return our cost function
         return distance_callback
 
 
     def get_result(self):
+        """
+        get_result returns out calculated result. If calculation failed, it will return {}
+        """
         return self.result
     
 
     def __init__(self, data):
+        """
+        init just directly triggers the calculation of the TSP problem and sets the result variable
+        """
         self.result = {}
         routing = pywrapcp.RoutingModel(data['tsp_size'], data['num_routes'],
                                         data['depot'])
         search_parameters = pywrapcp.RoutingModel.DefaultSearchParameters()
-        # Create the distance callback.
+        # Create the distance callback aka our cost function over our distance_matrix
         dist_callback = self.create_distance_callback(data['distance_matrix'])
+        # Set our distance callback for all of our traveling salesman
         routing.SetArcCostEvaluatorOfAllVehicles(dist_callback)
         # Solve the problem.
         assignment = routing.SolveWithParameters(search_parameters)
         if assignment:
+            # setting distance in miles and start city
             self.result['total_distance'] = str(assignment.ObjectiveValue()) + " miles"
             self.result['start_position'] = data['cities'][data['depot']]
-            # Index of the variable for the starting node.
+            # Index of the variable for the starting node, we always choose 0, because we have
+            # just one traveling salesman ;)
             index = routing.Start(0)
-            self.result['route'] = ''
+            # Python lists are ordered, therefore we can savely store the values in a list
+            self.result['route'] = []
             while not routing.IsEnd(index):
                 # Convert variable indices to node indices in the displayed route.
-                self.result['route'] += str(
-                    data['cities'][routing.IndexToNode(index)]) + ' -> '
+                self.result['route'].append(data['cities'][routing.IndexToNode(index)])
                 index = assignment.Value(routing.NextVar(index))
-            self.result['route'] += str(data['cities'][routing.IndexToNode(index)])
+            self.result['route'].append(data['cities'][routing.IndexToNode(index)])
         else:
             self.result = {}
 
