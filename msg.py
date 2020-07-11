@@ -46,9 +46,10 @@ def get_msg_data():
 class TSP:
     """
     TSP calculates the Traveling Salesman Problem for our Challenge.
-    We use Google's Operations Research library here, because of several reasons:
-
-        1. Reason
+    I see no benefit in re-implementing existing problems. So we just use Google's
+    excellent OR tools library for calculating the Traveling Salesman Problem.
+    The benefits are: I learn to use a new library + I don't need to waste time on a semi-perfect solution.
+    I doubt my personal solution would have outscaled Google's implementation in performance.
     """
     def create_distance_callback(self, dist_matrix):
         """
