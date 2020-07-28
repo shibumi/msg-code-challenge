@@ -91,8 +91,21 @@ If this is the case, go ahead and execute the actual challenge via:
 
 This will automatically load the CSV-file in this repository and calculates the challenge result.
 It should return a result data object, similar to this one:
-```json
-{'total_distance': '2337220 miles', 'start_position': 'Ismaning/München (Hauptsitz)', 'route': ['Ismaning/München (Hauptsitz)', 'Passau', 'Chemnitz', 'Görlitz', 'Berlin', 'Braunschweig', 'Hannover', 'Hamburg', 'Schortens/Wilhelmshaven', 'Lingen (Ems)', 'Münster', 'Essen', 'Düsseldorf', 'Köln/Hürth', 'Frankfurt', 'Walldorf', 'Bretten', 'St. Georgen', 'Stuttgart', 'Nürnberg', 'Ingolstadt', 'Ismaning/München (Hauptsitz)']}
+```
+{'total_distance': '2337220 miles', 
+ 'start_position': 'Ismaning/München (Hauptsitz)', 
+ 'route': 
+     ['Ismaning/München (Hauptsitz)', 
+     'Passau', 'Chemnitz', 'Görlitz', 
+     'Berlin', 'Braunschweig', 'Hannover', 
+     'Hamburg', 'Schortens/Wilhelmshaven', 
+     'Lingen (Ems)', 'Münster', 'Essen', 
+     'Düsseldorf', 'Köln/Hürth', 'Frankfurt', 
+     'Walldorf', 'Bretten', 'St. Georgen', 
+     'Stuttgart', 'Nürnberg', 'Ingolstadt', 
+     'Ismaning/München (Hauptsitz)'
+     ]
+}
 ```
 
 ## Implementation details
